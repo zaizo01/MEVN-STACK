@@ -3,10 +3,13 @@ const router = express.Router();
 
 // Import models
 import Nota from '../models/nota';
-
+const {verificarAuth, verificarAdmin} = require('../middlewares/autenticacion.js');
 // POST Note
-router.post('/add-note', async(req, res) => {
+router.post('/add-note', verificarAuth, async(req, res) => {
     const body = req.body;
+
+    body.userId = req.usuario._id;
+
     try {
         const notaDB = await Nota.create(body);
         res.status(200).json(notaDB)
@@ -34,10 +37,17 @@ router.get('/note/:id', async(req, res) => {
 })
 
 // GET All Note
-router.get('/note-all', async(req, res) => {
+router.get('/note-all', verificarAuth, async(req, res) => {
+
+    const userId = req.usuario._id;
+
+    const queryLimit  = Number(req.query.limite) || 5;
+    const querySkip  = Number(req.query.skip) || 0;
+
     try {
-        const notaDB = await Nota.find();
-        res.json(notaDB);
+        const notaDB = await Nota.find({ userId }).skip(querySkip).limit(queryLimit);
+        const totalNote = await Nota.find({userId}).countDocuments();
+        res.json({notaDB, totalNote});
     } catch (error) {
         return res.status(500).json({
             message: 'Error',
@@ -66,6 +76,7 @@ router.delete('/note/:id', async(req, res) => {
         })
     }
 
+// PUt Note 
 router.put('/note/:id', async(req, res) => {
     const _id = req.params.id;
     const body = req.body;

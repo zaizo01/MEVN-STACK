@@ -7,8 +7,8 @@ const app = express();
 
 // conection DB
 const mongoose = require('mongoose');
-// const uri = 'mongodb://localhost:27017/mevnapp';
-const uri = 'mongodb+srv://user-admin:<A6bIEIQ8v30UXxaz>@cluster0.y9kyc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
+const uri = 'mongodb://localhost:27017/mevnapp';
+// const uri = 'mongodb+srv://user-admin:<A6bIEIQ8v30UXxaz>@cluster0.y9kyc.mongodb.net/myFirstDatabase?retryWrites=true&w=majority';
 
 const options = { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true }
 mongoose.connect(uri, options).then(
@@ -26,6 +26,8 @@ app.use(express.urlencoded({ extended: true }))
 
 // routes
 app.use('/api', require('./routes/nota'))
+app.use('/api', require('./routes/user'))
+app.use('/api/login', require('./routes/login'))
 
 // Middleware for Vue.js router mode history
 const history = require('connect-history-api-fallback');
